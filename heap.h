@@ -62,13 +62,13 @@ public:
 
 private:
   /// Add whatever helper functions and data members you need below
-  int aryThing;
+  unsigned aryThing;
   size_t saize = 0;
   std::vector<T> thisHeap;
 	PComparator pcomp;
-	void trickleUp(int upIndex);
-	void trickleDown(int downIndex);
-	bool leaf(int leafIndex);
+	void trickleUp(unsigned upIndex);
+	void trickleDown(unsigned downIndex);
+	bool leaf(unsigned leafIndex);
 
 
 };
@@ -76,37 +76,44 @@ private:
 // Add implementation of member functions here
 
 template <typename T, typename PComparator>
-bool Heap<T, PComparator>::leaf(int leafIndex){
-	if (((aryThing * leafIndex) + 1) >= thisHeap.size()){
+bool Heap<T, PComparator>::leaf(unsigned leafIndex){
+	if (((aryThing * leafIndex) + 1) >= saize){
 		return true;
 	}
 	return false;
 }
 
 template <typename T, typename PComparator>
-void Heap<T, PComparator>::trickleUp(int upIndex){
-	int parent = upIndex / aryThing;
-	while (upIndex >= 1 && thisHeap[upIndex] < thisHeap[parent]){
-		std::swap(thisHeap[parent], thisHeap[upIndex]);
-		upIndex = parent;
-		parent = upIndex / aryThing;
+void Heap<T, PComparator>::trickleUp(unsigned upIndex){
+  unsigned parentIndex;
+  if (upIndex == 0){
+    parentIndex = 0;
+  }else{
+    parentIndex = (upIndex - 1) / aryThing;
+  }
+	while (parentIndex >= 0 && pcomp(thisHeap[upIndex], thisHeap[parentIndex])){
+		std::swap(thisHeap[parentIndex], thisHeap[upIndex]);
+		upIndex = parentIndex;
+		parentIndex = (upIndex - 1) / aryThing;
 	}
 }
 
 template <typename T, typename PComparator>
-void Heap<T, PComparator>::trickleDown(int downIndex){
+void Heap<T, PComparator>::trickleDown(unsigned downIndex){
 	if (leaf(downIndex)){
 		return;
 	}
 
-	int smol = aryThing * downIndex;
-	if((aryThing * downIndex) + 1){
-		int rrr = smol + 1;
-		if (thisHeap[rrr] < thisHeap[smol]){
-			smol = rrr;
-		}
-	}
-	if(thisHeap[downIndex] > thisHeap[smol]){
+	unsigned smol = aryThing * downIndex + 1;
+  unsigned rrr = smol;
+  while (rrr < thisHeap.size() - 1 && rrr < (aryThing * downIndex + aryThing)){
+    rrr++;
+    if (pcomp(thisHeap[rrr], thisHeap[smol])){
+      smol = rrr;
+    }
+  }
+
+	if(pcomp(thisHeap[smol], thisHeap[downIndex])){
 		std::swap(thisHeap[downIndex], thisHeap[smol]);
 		trickleDown(smol);
 	}
@@ -132,6 +139,7 @@ Heap<T, PComparator>::~Heap(){
 template <typename T, typename PComparator>
 void Heap<T, PComparator>::push(const T& item){
 	thisHeap.push_back(item);
+  saize++;
 	trickleUp(thisHeap.size() - 1);
 
 }
@@ -153,7 +161,7 @@ T const & Heap<T,PComparator>::top() const
 
   }
 
-  return thisHeap[1];
+  return thisHeap[0];
   // If we get here we know the heap has at least 1 item
   // Add code to return the top element
 
@@ -175,11 +183,10 @@ void Heap<T,PComparator>::pop()
 
 
   }
-
-  thisHeap[1] = thisHeap.back();
+  thisHeap[0] = thisHeap[saize - 1];
   thisHeap.pop_back();
-  trickleDown(1);
-
+  saize--;
+  trickleDown(0);
 
 
 
@@ -189,7 +196,7 @@ void Heap<T,PComparator>::pop()
 
 template <typename T, typename PComparator>
 bool Heap<T, PComparator>::empty() const{
-	if (saize == 0){
+	if (thisHeap.empty()){
 		return true;
 	}else{
 		return false;
@@ -198,7 +205,7 @@ bool Heap<T, PComparator>::empty() const{
 
 template <typename T, typename PComparator>
 size_t Heap<T, PComparator>::size() const{
-	return saize;
+	return thisHeap.size();
 
 }
 
