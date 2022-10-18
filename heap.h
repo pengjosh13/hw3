@@ -62,21 +62,64 @@ public:
 
 private:
   /// Add whatever helper functions and data members you need below
-  int arrayChildren;
+  int aryThing;
   size_t saize = 0;
   std::vector<T> thisHeap;
 	PComparator pcomp;
 	void trickleUp(int upIndex);
 	void trickleDown(int downIndex, int lastIndex);
+	bool leaf(int leafIndex);
 
 
 };
 
 // Add implementation of member functions here
 
+template <typename T, typename PComparator>
+bool Heap<T, PComparator>::leaf(int leafIndex){
+	if (((aryThing * leafIndex) + 1) >= saize()){
+		return true;
+	}
+	return false;
+}
 
 template <typename T, typename PComparator>
-Heap<T, PComparator>::Heap(int m, PComparator c): arrayChildren(m), pcomp(c){
+void Heap<T, PComparator>::trickleUp(int upIndex){
+	int parent = upIndex / aryThing;
+	while (upIndex >= 1 && thisHeap[upIndex] < thisHeap[parent]){
+		std::swap(thisHeap[parent], thisHeap[upIndex]);
+		upIndex = parent;
+		parent = upIndex / aryThing;
+	}
+}
+
+template <typename T, typename PComparator>
+void Heap<T, PComparator>::trickleDown(int downIndex){
+	if (leaf(downIndex)){
+		return;
+	}
+
+	int smol = aryThing * downIndex;
+	if(()aryThing * downIndex) + 1){
+		int rrr = smol + 1;
+		if (thisHeap[rrr] < thisHeap[smol]){
+			smol = rrr;
+		}
+	}
+	if(thisHeap[downIndex] > thisHeap[smol]){
+		std::swap(thisHeap[downIndex], thisHeap[smol]);
+		trickleDown(smol);
+	}
+}
+
+
+
+
+
+
+
+template <typename T, typename PComparator>
+Heap<T, PComparator>::Heap(int m, PComparator c): aryThing(m), pcomp(c){
 
 }
 
@@ -89,7 +132,7 @@ Heap<T, PComparator>::~Heap(){
 template <typename T, typename PComparator>
 void Heap<T, PComparator>::push(const T& item){
 	thisHeap.push_back(item);
-	saize++;
+	trickelUp(thisHeap.size() - 1);
 
 }
 
@@ -102,7 +145,7 @@ T const & Heap<T,PComparator>::top() const
   // Here we use exceptions to handle the case of trying
   // to access the top element of an empty heap
   if(empty()){
-    throw (std::exception("Empty heap"));
+    throw (std::out_of_range());
     // ================================
     // throw the appropriate exception
     // ================================
@@ -110,7 +153,7 @@ T const & Heap<T,PComparator>::top() const
 
   }
 
-  return thisHeap[0];
+  return thisHeap[1];
   // If we get here we know the heap has at least 1 item
   // Add code to return the top element
 
@@ -125,7 +168,7 @@ template <typename T, typename PComparator>
 void Heap<T,PComparator>::pop()
 {
   if(empty()){
-    throw (std::exception("Empty heap"));
+    throw (std::out_of_range()));
     // ================================
     // throw the appropriate exception
     // ================================
@@ -133,9 +176,9 @@ void Heap<T,PComparator>::pop()
 
   }
 
-  thisHeap[0] = thisHeap[saize - 1];
+  thisHeap[1] = thisHeap.back();
   thisHeap.pop_back();
-  saize--;
+  trickleDown(1);
 
 
 
@@ -151,6 +194,12 @@ bool Heap<T, PComparator>::empty() const{
 	}else{
 		return false;
 	}
+}
+
+template <typename T, typename PComparator>
+size_t Heap<T, PComparator>::size() const{
+	return saize;
+
 }
 
 
