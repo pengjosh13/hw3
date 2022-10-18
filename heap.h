@@ -67,7 +67,7 @@ private:
   std::vector<T> thisHeap;
 	PComparator pcomp;
 	void trickleUp(int upIndex);
-	void trickleDown(int downIndex, int lastIndex);
+	void trickleDown(int downIndex);
 	bool leaf(int leafIndex);
 
 
@@ -77,7 +77,7 @@ private:
 
 template <typename T, typename PComparator>
 bool Heap<T, PComparator>::leaf(int leafIndex){
-	if (((aryThing * leafIndex) + 1) >= saize()){
+	if (((aryThing * leafIndex) + 1) >= thisHeap.size()){
 		return true;
 	}
 	return false;
@@ -100,7 +100,7 @@ void Heap<T, PComparator>::trickleDown(int downIndex){
 	}
 
 	int smol = aryThing * downIndex;
-	if(()aryThing * downIndex) + 1){
+	if((aryThing * downIndex) + 1){
 		int rrr = smol + 1;
 		if (thisHeap[rrr] < thisHeap[smol]){
 			smol = rrr;
@@ -132,7 +132,7 @@ Heap<T, PComparator>::~Heap(){
 template <typename T, typename PComparator>
 void Heap<T, PComparator>::push(const T& item){
 	thisHeap.push_back(item);
-	trickelUp(thisHeap.size() - 1);
+	trickleUp(thisHeap.size() - 1);
 
 }
 
@@ -145,7 +145,7 @@ T const & Heap<T,PComparator>::top() const
   // Here we use exceptions to handle the case of trying
   // to access the top element of an empty heap
   if(empty()){
-    throw (std::out_of_range());
+    throw(std::out_of_range("Empty"));
     // ================================
     // throw the appropriate exception
     // ================================
@@ -168,7 +168,7 @@ template <typename T, typename PComparator>
 void Heap<T,PComparator>::pop()
 {
   if(empty()){
-    throw (std::out_of_range()));
+    throw (std::out_of_range("Empty"));
     // ================================
     // throw the appropriate exception
     // ================================
